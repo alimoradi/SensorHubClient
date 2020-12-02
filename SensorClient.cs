@@ -74,6 +74,7 @@ namespace SensorHubClient
                 await connection.StopAsync();
                 
             }
+            Database.Instance().Stop();
             return true;
             //connection.Remove
             //stop hub client

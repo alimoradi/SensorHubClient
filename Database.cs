@@ -1,7 +1,7 @@
 using Npgsql;
 using System;
 using System.Threading.Tasks;
-
+using System.Data;
 namespace SensorHubClient
 {
     public class Database
@@ -25,7 +25,7 @@ namespace SensorHubClient
 
             return _instance;
         }
-        public async Task<bool> CreateDB()
+        public void CreateDB()
         {
             var command = new NpgsqlCommand($"CREATE DATABASE  \"{dbName}\" " +
                                                "WITH OWNER = \"postgres\" " +
@@ -33,49 +33,66 @@ namespace SensorHubClient
                                                "CONNECTION LIMIT = -1;", serverConnection);
             try
             {
-                await serverConnection.OpenAsync();
-
-                if (!await DBExists())
+                OpenServerConnection();
+                if (!DBExists())
                 {
-                    await command.ExecuteNonQueryAsync();
+                    command.ExecuteNonQuery();
                 }
-                await serverConnection.CloseAsync();
-                return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 Console.WriteLine("Problem creating database");
-                return false;
+                Console.WriteLine(ex.Message);
             }
 
         }
-        private async Task<bool> DBExists()
+        private bool DBExists()
         {
             var command = new NpgsqlCommand($"SELECT COUNT(*) FROM pg_catalog.pg_database WHERE datname = '{dbName}'", serverConnection);
-            var reader = await command.ExecuteScalarAsync();
-            Console.WriteLine(reader.ToString());
+            var reader = command.ExecuteScalar();
             return int.Parse(reader.ToString()) > 0;
         }
-        private async Task<bool> CreateTable(string tableName)
+        private void CreateTable(string tableName)
         {
             string[] sensorColumnArray = new string[150];
             for (int i = 0; i < sensorColumnArray.Length; i++)
             {
                 sensorColumnArray[i] = $"sensor{i + 1} VARCHAR(25)";
             }
-            var command = new NpgsqlCommand($"CREATE TABLE IF NOT EXISTS  \"{tableName}\" ( timestamp timestamp NOT NULL DEFAULT NOW(), id UUID PRIMARY KEY, {String.Join(',', sensorColumnArray)})", databaseConnection);
-            await databaseConnection.OpenAsync();
-            await command.ExecuteNonQueryAsync();
-            databaseConnection.Close();
-            return true;
+            var command = new NpgsqlCommand($"CREATE TABLE IF NOT EXISTS  \"{tableName}\" ( timestamp bigint, id UUID PRIMARY KEY, {String.Join(',', sensorColumnArray)})", databaseConnection);
+
+            OpenDBConnection();
+            command.ExecuteNonQuery();
+
+
         }
-        public async Task<bool> Insert(SensorData data)
+        private void OpenDBConnection()
         {
-            if (await CreateDB())
+            if (databaseConnection.State == ConnectionState.Closed
+            || databaseConnection.State == ConnectionState.Broken)
             {
+                databaseConnection.Open();
+
+            }
+
+        }
+        private void OpenServerConnection()
+        {
+            if (serverConnection.State == ConnectionState.Closed
+            || serverConnection.State == ConnectionState.Broken)
+            {
+                serverConnection.Open();
+
+            }
+
+        }
+        public void Insert(SensorData data)
+        {
+            CreateDB();
+            
                 try
                 {
-                    await CreateTable(data.type);
+                    CreateTable(data.type);
                     var sensorColumns = String.Join(',', data.data.Keys);
                     var sensorValues = String.Join(',', data.data.Values);
                     sensorValues = "";
@@ -84,23 +101,32 @@ namespace SensorHubClient
                         sensorValues += $"'{item}',";
                     }
                     sensorValues = sensorValues.Substring(0, sensorValues.Length - 1);
-                    var command = new NpgsqlCommand($"INSERT INTO  \"{data.type}\" (timestamp, id, {sensorColumns} ) VALUES ('{data.Timestamp}', '{data.id}', {sensorValues})", databaseConnection);
-                    await databaseConnection.OpenAsync();
-                    await command.ExecuteNonQueryAsync();
-                    await databaseConnection.CloseAsync();
-                    return true;
+                    var command = new NpgsqlCommand($"INSERT INTO  \"{data.type}\" (timestamp, id, {sensorColumns} ) VALUES ({data.timestamp}, '{data.id}', {sensorValues})", databaseConnection);
+                    OpenDBConnection();
+                    command.ExecuteNonQuery();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     Console.WriteLine("Problem Creating/Inserting into table.");
-                    return false;
+                    Console.WriteLine(ex.Message);
                 }
+          
+
+
+
+        }
+        public void Stop()
+        {
+            if (serverConnection.State == ConnectionState.Open)
+            {
+            Console.WriteLine("Closing DB server connection...");
+              serverConnection.Close();
             }
-            else
-                return false;
-
-
-
+            if (databaseConnection.State == ConnectionState.Open)
+            {
+            Console.WriteLine("Closing DB connection...");
+              databaseConnection.Close();
+            }
         }
     }
 }

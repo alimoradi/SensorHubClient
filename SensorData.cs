@@ -25,13 +25,13 @@ namespace SensorHubClient
         {
             return JsonConvert.DeserializeObject<SensorData>(data);
         }
-        public static async void Insert(string data)
+        public static void Insert(string data)
         {
             try
             {
                 var dataObject = Parse(data);
                 Console.WriteLine("Parsing data successful");
-                await Database.Instance().Insert(dataObject);
+                Database.Instance().Insert(dataObject);
             }
             catch (Exception)
             {
