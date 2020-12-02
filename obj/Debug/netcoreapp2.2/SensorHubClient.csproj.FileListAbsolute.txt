@@ -1,0 +1,12 @@
+/Users/alimoradi/Documents/Projects/tests/SensorHubClient/bin/Debug/netcoreapp2.2/SensorHubClient.deps.json
+/Users/alimoradi/Documents/Projects/tests/SensorHubClient/bin/Debug/netcoreapp2.2/SensorHubClient.runtimeconfig.json
+/Users/alimoradi/Documents/Projects/tests/SensorHubClient/bin/Debug/netcoreapp2.2/SensorHubClient.runtimeconfig.dev.json
+/Users/alimoradi/Documents/Projects/tests/SensorHubClient/bin/Debug/netcoreapp2.2/SensorHubClient.dll
+/Users/alimoradi/Documents/Projects/tests/SensorHubClient/bin/Debug/netcoreapp2.2/SensorHubClient.pdb
+/Users/alimoradi/Documents/Projects/tests/SensorHubClient/obj/Debug/netcoreapp2.2/SensorHubClient.csprojAssemblyReference.cache
+/Users/alimoradi/Documents/Projects/tests/SensorHubClient/obj/Debug/netcoreapp2.2/SensorHubClient.AssemblyInfoInputs.cache
+/Users/alimoradi/Documents/Projects/tests/SensorHubClient/obj/Debug/netcoreapp2.2/SensorHubClient.AssemblyInfo.cs
+/Users/alimoradi/Documents/Projects/tests/SensorHubClient/obj/Debug/netcoreapp2.2/SensorHubClient.csproj.CoreCompileInputs.cache
+/Users/alimoradi/Documents/Projects/tests/SensorHubClient/obj/Debug/netcoreapp2.2/SensorHubClient.dll
+/Users/alimoradi/Documents/Projects/tests/SensorHubClient/obj/Debug/netcoreapp2.2/SensorHubClient.pdb
+/Users/alimoradi/Documents/Projects/tests/SensorHubClient/obj/Debug/netcoreapp2.2/SensorHubClient.genruntimeconfig.cache
