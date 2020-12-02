@@ -7,6 +7,8 @@ namespace SensorHubClient
     public class Database
     {
         private static Database _instance;
+        
+        //Should move to configs
         const string connectionString = "Server=localhost;Port=5432;User Id=postgres;Password=miasidney;";
         const string dbName = "sensor_client_hub";
         NpgsqlConnection serverConnection;
